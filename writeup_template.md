@@ -23,25 +23,37 @@ The goals / steps of this project are the following:
 
 ###1. Describe your pipeline. As part of the description, explain how you modified the draw_lines() function.
 
-My pipeline consisted of 5 steps. First, I converted the images to grayscale, then I .... 
+I implemented two different piplines. The top parts are same. The bottom parts are different, by using HoughLines and HoughLinesP.
 
-In order to draw a single line on the left and right lanes, I modified the draw_lines() function by ...
+Comon part:
+* convert image to grayscale
+* gaussian blur, removing noise
+* canny edge detection, tune parameters of the previous step and this step
+* create a mask of regsion of interest, tune mask corners
 
-If you'd like to include images to show how the pipeline works, here is how to include an image: 
+HoughLines:
+* get hough lines in polar coordinates, in order of intersection count desc.
+* select top valid lines, ignoring lines that are with angle less than 10 degree. left/right lines are seperated by angle pi/2.
+* draw left and right lines in mask region.
 
-![alt text][image1]
-
+HoughLinesP:
+* HoughLinesP only output small line segments, collect lines first.
+* left/right lines can be seperate by middle x coordinate of mask. lines across left and right are invalid.
+* get average of m and b for left and right line separately.
+* draive left and right lines in mask region.
 
 ###2. Identify potential shortcomings with your current pipeline
 
-
-One potential shortcoming would be what would happen when ... 
-
-Another shortcoming could be ...
+It's still like a toy, with a lot of restriction and shortcomings.
+* mask (region of interest) is fixed. It won't work if camera position moved or care is not going straightly.
+  Solution: possiblly need to detect road ground area.
+* engine cover may appear in the image
+  Solution: calculate difference with the prev image can get covered region of the image
+* curve lanes
+  Solution: 1) fix it using HoughLinesP. The mask area can be divided into small bars top to bottom. Apply m/b calculation onto the small bars only. 2) use polynomial to mimic the curv.
+* different resolution of image cause fixed mask failure
+  Solution: quick fix is to use percentage to define mask
 
 
 ###3. Suggest possible improvements to your pipeline
-
-A possible improvement would be to ...
-
-Another potential improvement could be to ...
+Included in previous section
